@@ -11,17 +11,20 @@ let ERROR_MESSAGE = "Ay! Mi cerebro anda loquillo. Creo que hay un problema."
 
 public struct Chatbot {
     let llave: String
+    let descripcion: String
 
     private let baseURL: String = "https://chat-api-wild-pine-498.fly.dev"
     private var chatId: UUID = UUID()
-    
-    public init(llave: String) {
+
+    public init(llave: String, descripcion: String) {
         self.llave = llave
+        self.descripcion = descripcion
         guard checkHealth() else {
-            fatalError("El servidor no está disponible. Por favor, verifica la URL o el estado del servidor.")
+            fatalError(
+                "El servidor no está disponible. Por favor, verifica la URL o el estado del servidor."
+            )
         }
     }
-
 
     public mutating func reiniciar() {
         chatId = UUID()
@@ -39,6 +42,7 @@ public struct Chatbot {
 
         let body: [String: Any] = [
             "message": mensaje,
+            "system_prompt": descripcion,
             "chat_id": chatId.uuidString,
         ]
 
@@ -59,7 +63,7 @@ public struct Chatbot {
                 print("Error making request: \(error)")
                 return
             }
-            
+
             guard let data = data else {
                 print("No data in response")
                 return
